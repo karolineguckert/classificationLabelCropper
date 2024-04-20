@@ -9,7 +9,6 @@ class ClassificationLabelCropper:
         self.WIDTH = 4608
         self.HEIGHT = 3456
 
-    # TODO incluir uma validação de fim de imagem para redyzir o tamanho de corte
     def create_crops_from_image(self, file_name):
         original_image = Image.open('images/originalImageToCrop/{}.jpg'.format(file_name))
         label_content = self.__get_label_lines('images/originalImageToCrop/{}.txt'.format(file_name))
@@ -19,10 +18,10 @@ class ClassificationLabelCropper:
             class_type = content[0]
 
             new_image = self.__get_new_image_cropped(content, original_image)
-            # new_image.save('./images/cropped/images/{}-{}.jpg'.format(file_name, i))
+            new_image.save('./images/cropped/images/{}-{}.jpg'.format(file_name, i))
 
-            # new_voc_bounding_box = BoundingBox.from_voc(*self.__get_new_image_bounding_box(new_image), new_image.size)
-            # self.__create_label_file(new_voc_bounding_box, class_type, '{}-{}'.format(file_name, i))
+            new_voc_bounding_box = BoundingBox.from_voc(*self.__get_new_image_bounding_box(new_image), new_image.size)
+            self.__create_label_file(new_voc_bounding_box, class_type, '{}-{}'.format(file_name, i))
 
     # Assistant method to create the bounding box in a txt file
     #
@@ -91,46 +90,6 @@ class ClassificationLabelCropper:
         new_value_x_br = self.__get_value_x_br(bounding_boxes.x_br)
         new_value_y_br = self.__get_value_y_br(bounding_boxes.y_br)
 
-        # if(new_value_x_tl - 30) < 0:
-        #     aux_x_tl = self.WIDTH - new_value_x_tl
-        #
-        #     if aux_x_tl == self.WIDTH:
-        #         new_value_x_tl = 0
-        #     else:
-        #         new_value_x_tl = aux_x_tl + new_value_x_tl
-        # else:
-        #     new_value_x_tl = new_value_x_tl - self.BORDER_DEFAULT
-
-        # if(new_value_y_tl - 30) < 0:
-        #     aux_y_tl = self.WIDTH - new_value_y_tl
-        #
-        #     if aux_y_tl == self.WIDTH:
-        #         new_value_y_tl = 0
-        #     else:
-        #         new_value_y_tl = aux_y_tl + new_value_y_tl
-        # else:
-        #     new_value_y_tl = new_value_y_tl - self.BORDER_DEFAULT
-
-        # if (new_value_x_br + 30) > self.WIDTH:
-        #     aux_x_br = self.WIDTH - new_value_x_br
-        #
-        #     if aux_x_br == 0:
-        #         new_value_x_br = 0
-        #     else:
-        #         new_value_x_br = aux_x_br + new_value_x_br
-        # else:
-        #     new_value_x_br = new_value_x_br + self.BORDER_DEFAULT
-
-        # if (new_value_y_br + 30) > self.WIDTH:
-        #     aux_y_br = self.WIDTH - new_value_y_br
-        #
-        #     if aux_y_br == 0:
-        #         new_value_y_br = 0
-        #     else:
-        #         new_value_y_br = aux_y_br + new_value_y_br
-        # else:
-        #     new_value_y_br = new_value_y_br + self.BORDER_DEFAULT
-
         return (
             new_value_x_tl,
             new_value_y_tl,
@@ -159,9 +118,9 @@ class ClassificationLabelCropper:
     # y_tl is the value from y of the top left
     def __get_value_y_tl(self, y_tl):
         if (y_tl - self.BORDER_DEFAULT) < 0:
-            aux_y_tl = self.WIDTH - y_tl
+            aux_y_tl = self.HEIGHT - y_tl
 
-            if aux_y_tl == self.WIDTH:
+            if aux_y_tl == self.HEIGHT:
                 new_value_y_tl = 0
             else:
                 new_value_y_tl = aux_y_tl + y_tl
@@ -190,8 +149,8 @@ class ClassificationLabelCropper:
     #
     # y_br is the value from y of the bottom right
     def __get_value_y_br(self, y_br):
-        if (y_br + 30) > self.WIDTH:
-            aux_y_br = self.WIDTH - y_br
+        if (y_br + 30) > self.HEIGHT:
+            aux_y_br = self.HEIGHT - y_br
 
             if aux_y_br == 0:
                 new_value_y_br = 0
@@ -201,7 +160,6 @@ class ClassificationLabelCropper:
             new_value_y_br = y_br + self.BORDER_DEFAULT
 
         return new_value_y_br
-
 
     # Assistant method to get the original bounding box from the image
     #
