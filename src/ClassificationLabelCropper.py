@@ -87,9 +87,9 @@ class ClassificationLabelCropper:
     # bounding_boxes is the bounding box from the image cropped
     def __get_new_voc_bounding_box(self, bounding_boxes):
         new_value_x_tl = self.__get_value_x_tl(bounding_boxes.x_tl)
-        new_value_y_tl = bounding_boxes.y_tl
-        new_value_x_br = bounding_boxes.x_br
-        new_value_y_br = bounding_boxes.y_br
+        new_value_y_tl = self.__get_value_y_tl(bounding_boxes.y_tl)
+        new_value_x_br = self.__get_value_x_br(bounding_boxes.x_br)
+        new_value_y_br = self.__get_value_y_br(bounding_boxes.y_br)
 
         # if(new_value_x_tl - 30) < 0:
         #     aux_x_tl = self.WIDTH - new_value_x_tl
@@ -101,35 +101,35 @@ class ClassificationLabelCropper:
         # else:
         #     new_value_x_tl = new_value_x_tl - self.BORDER_DEFAULT
 
-        if(new_value_y_tl - 30) < 0:
-            aux_y_tl = self.WIDTH - new_value_y_tl
+        # if(new_value_y_tl - 30) < 0:
+        #     aux_y_tl = self.WIDTH - new_value_y_tl
+        #
+        #     if aux_y_tl == self.WIDTH:
+        #         new_value_y_tl = 0
+        #     else:
+        #         new_value_y_tl = aux_y_tl + new_value_y_tl
+        # else:
+        #     new_value_y_tl = new_value_y_tl - self.BORDER_DEFAULT
 
-            if aux_y_tl == self.WIDTH:
-                new_value_y_tl = 0
-            else:
-                new_value_y_tl = aux_y_tl + new_value_y_tl
-        else:
-            new_value_y_tl = new_value_y_tl - self.BORDER_DEFAULT
+        # if (new_value_x_br + 30) > self.WIDTH:
+        #     aux_x_br = self.WIDTH - new_value_x_br
+        #
+        #     if aux_x_br == 0:
+        #         new_value_x_br = 0
+        #     else:
+        #         new_value_x_br = aux_x_br + new_value_x_br
+        # else:
+        #     new_value_x_br = new_value_x_br + self.BORDER_DEFAULT
 
-        if (new_value_x_br + 30) > self.WIDTH:
-            aux_x_br = self.WIDTH - new_value_x_br
-
-            if aux_x_br == 0:
-                new_value_x_br = 0
-            else:
-                new_value_x_br = aux_x_br + new_value_x_br
-        else:
-            new_value_x_br = new_value_x_br + self.BORDER_DEFAULT
-
-        if (new_value_y_br + 30) > self.WIDTH:
-            aux_y_br = self.WIDTH - new_value_y_br
-
-            if aux_y_br == 0:
-                new_value_y_br = 0
-            else:
-                new_value_y_br = aux_y_br + new_value_y_br
-        else:
-            new_value_y_br = new_value_y_br + self.BORDER_DEFAULT
+        # if (new_value_y_br + 30) > self.WIDTH:
+        #     aux_y_br = self.WIDTH - new_value_y_br
+        #
+        #     if aux_y_br == 0:
+        #         new_value_y_br = 0
+        #     else:
+        #         new_value_y_br = aux_y_br + new_value_y_br
+        # else:
+        #     new_value_y_br = new_value_y_br + self.BORDER_DEFAULT
 
         return (
             new_value_x_tl,
@@ -138,6 +138,9 @@ class ClassificationLabelCropper:
             new_value_y_br
         )
 
+    # Assistant method to get the transformed value with border of the original image
+    #
+    # x_tl is the value from x of the top left
     def __get_value_x_tl(self, x_tl):
         if(x_tl - self.BORDER_DEFAULT) < 0:
             aux_x_tl = self.WIDTH - x_tl
@@ -150,6 +153,55 @@ class ClassificationLabelCropper:
             new_value_x_tl = x_tl - self.BORDER_DEFAULT
 
         return new_value_x_tl
+
+    # Assistant method to get the transformed value with border of the original image
+    #
+    # y_tl is the value from y of the top left
+    def __get_value_y_tl(self, y_tl):
+        if (y_tl - self.BORDER_DEFAULT) < 0:
+            aux_y_tl = self.WIDTH - y_tl
+
+            if aux_y_tl == self.WIDTH:
+                new_value_y_tl = 0
+            else:
+                new_value_y_tl = aux_y_tl + y_tl
+        else:
+            new_value_y_tl = y_tl - self.BORDER_DEFAULT
+
+        return new_value_y_tl
+
+    # Assistant method to get the transformed value with border of the original image
+    #
+    # x_br is the value from x of the bottom right
+    def __get_value_x_br(self, x_br):
+        if (x_br + self.BORDER_DEFAULT) > self.WIDTH:
+            aux_x_br = self.WIDTH - x_br
+
+            if aux_x_br == 0:
+                new_value_x_br = 0
+            else:
+                new_value_x_br = aux_x_br + x_br
+        else:
+            new_value_x_br = x_br + self.BORDER_DEFAULT
+
+        return new_value_x_br
+
+    # Assistant method to get the transformed value with border of the original image
+    #
+    # y_br is the value from y of the bottom right
+    def __get_value_y_br(self, y_br):
+        if (y_br + 30) > self.WIDTH:
+            aux_y_br = self.WIDTH - y_br
+
+            if aux_y_br == 0:
+                new_value_y_br = 0
+            else:
+                new_value_y_br = aux_y_br + y_br
+        else:
+            new_value_y_br = y_br + self.BORDER_DEFAULT
+
+        return new_value_y_br
+
 
     # Assistant method to get the original bounding box from the image
     #
