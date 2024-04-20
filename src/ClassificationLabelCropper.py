@@ -19,11 +19,16 @@ class ClassificationLabelCropper:
             class_type = content[0]
 
             new_image = self.__get_new_image_cropped(content, original_image)
-            new_image.save('./images/cropped/images/{}-{}.jpg'.format(file_name, i))
+            # new_image.save('./images/cropped/images/{}-{}.jpg'.format(file_name, i))
 
-            new_voc_bounding_box = BoundingBox.from_voc(*self.__get_new_image_bounding_box(new_image), new_image.size)
-            self.__create_label_file(new_voc_bounding_box, class_type, '{}-{}'.format(file_name, i))
+            # new_voc_bounding_box = BoundingBox.from_voc(*self.__get_new_image_bounding_box(new_image), new_image.size)
+            # self.__create_label_file(new_voc_bounding_box, class_type, '{}-{}'.format(file_name, i))
 
+    # Assistant method to create the bounding box in a txt file
+    #
+    # new_voc_bounding_box is the voc bounding box of the cropped image
+    # class_type is the type of the object that is in the image
+    # file_name is the name of the file
     def __create_label_file(self, new_voc_bounding_box, class_type, file_name):
         file = open('./images/cropped/labels/{}.txt'.format(file_name), 'a')
         file.write(self.__format_bounding_box(new_voc_bounding_box.to_yolo().values, class_type))
@@ -41,6 +46,10 @@ class ClassificationLabelCropper:
 
         return [x, x_c, y_c, y]
 
+    # Assistant method to format the bounding box to save in a txt file
+    #
+    # bounding_box is the tuple resultant for the cropped image
+    # class_type is the type of the object that is in the image
     def __format_bounding_box(self, bounding_box, class_type):
         x = bounding_box[0]  # corresponds to the first value of the definition of the yolo
         x_c = bounding_box[1]  # corresponds to the second value of the definition of the yolo
@@ -77,12 +86,70 @@ class ClassificationLabelCropper:
     #
     # bounding_boxes is the bounding box from the image cropped
     def __get_new_voc_bounding_box(self, bounding_boxes):
+        new_value_x_tl = self.__get_value_x_tl(bounding_boxes.x_tl)
+        new_value_y_tl = bounding_boxes.y_tl
+        new_value_x_br = bounding_boxes.x_br
+        new_value_y_br = bounding_boxes.y_br
+
+        # if(new_value_x_tl - 30) < 0:
+        #     aux_x_tl = self.WIDTH - new_value_x_tl
+        #
+        #     if aux_x_tl == self.WIDTH:
+        #         new_value_x_tl = 0
+        #     else:
+        #         new_value_x_tl = aux_x_tl + new_value_x_tl
+        # else:
+        #     new_value_x_tl = new_value_x_tl - self.BORDER_DEFAULT
+
+        if(new_value_y_tl - 30) < 0:
+            aux_y_tl = self.WIDTH - new_value_y_tl
+
+            if aux_y_tl == self.WIDTH:
+                new_value_y_tl = 0
+            else:
+                new_value_y_tl = aux_y_tl + new_value_y_tl
+        else:
+            new_value_y_tl = new_value_y_tl - self.BORDER_DEFAULT
+
+        if (new_value_x_br + 30) > self.WIDTH:
+            aux_x_br = self.WIDTH - new_value_x_br
+
+            if aux_x_br == 0:
+                new_value_x_br = 0
+            else:
+                new_value_x_br = aux_x_br + new_value_x_br
+        else:
+            new_value_x_br = new_value_x_br + self.BORDER_DEFAULT
+
+        if (new_value_y_br + 30) > self.WIDTH:
+            aux_y_br = self.WIDTH - new_value_y_br
+
+            if aux_y_br == 0:
+                new_value_y_br = 0
+            else:
+                new_value_y_br = aux_y_br + new_value_y_br
+        else:
+            new_value_y_br = new_value_y_br + self.BORDER_DEFAULT
+
         return (
-            bounding_boxes.x_tl - self.BORDER_DEFAULT,
-            bounding_boxes.y_tl - self.BORDER_DEFAULT,
-            bounding_boxes.x_br + self.BORDER_DEFAULT,
-            bounding_boxes.y_br + self.BORDER_DEFAULT
+            new_value_x_tl,
+            new_value_y_tl,
+            new_value_x_br,
+            new_value_y_br
         )
+
+    def __get_value_x_tl(self, x_tl):
+        if(x_tl - self.BORDER_DEFAULT) < 0:
+            aux_x_tl = self.WIDTH - x_tl
+
+            if aux_x_tl == self.WIDTH:
+                new_value_x_tl = 0
+            else:
+                new_value_x_tl = aux_x_tl + x_tl
+        else:
+            new_value_x_tl = x_tl - self.BORDER_DEFAULT
+
+        return new_value_x_tl
 
     # Assistant method to get the original bounding box from the image
     #
