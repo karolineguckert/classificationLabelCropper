@@ -7,7 +7,7 @@ import shutil
 class ClassificationLabelCropper:
 
     def __init__(self):
-        self.TYPE_QUANTITY = 5
+        self.TYPE_QUANTITY = 6
         self.BORDER_DEFAULT = 30
         self.WIDTH = 4608
         self.HEIGHT = 3456
@@ -26,7 +26,21 @@ class ClassificationLabelCropper:
             label_file_list = os.listdir('{}/{}/labels'.format(self.PATH_CROPPED, file))
 
             for label_file in label_file_list:
-                print(label_file)
+                image_file = label_file.replace(".txt", ".jpg")
+
+                original_label_path = '{}/{}/labels/{}'.format(self.PATH_CROPPED, file, label_file)
+                original_image_path = '{}/{}/images/{}'.format(self.PATH_CROPPED, file, image_file)
+
+                content = self.__get_label_lines(original_label_path)
+                content_splitted = content[0].split(' ')
+                class_type = content_splitted[0]
+
+                copy_label_path = '{}/{}/labels/{}'.format(self.PATH_ALL_IMAGES_BY_TYPE, class_type, label_file)
+                copy_image_path = '{}/{}/images/{}'.format(self.PATH_ALL_IMAGES_BY_TYPE, class_type, image_file)
+
+                shutil.copy(original_label_path, copy_label_path)
+                shutil.copy(original_image_path, copy_image_path)
+
 
     # Assistant method to create copies of labels and images to folder all images cropped
     #
