@@ -15,14 +15,42 @@ class ClassificationLabelCropper:
         self.PATH_FINALLY = './images/originalImageFinallyCropped'
         self.PATH_CROPPED = './images/cropped'
         self.PATH_ALL_IMAGES = './images/allImageCropped'
+        self.PATH_ALL_IMAGES_BY_CLASS = './images/allImagesCroppedByClass'
+
+    def copy_images_cropped_to_folder_all_images_by_class(self):
+        file_list = os.listdir('{}/'.format(self.PATH_CROPPED))
+
+
+        try:
+            os.mkdir('{}/0'.format(self.PATH_ALL_IMAGES_BY_CLASS))
+        except OSError as error:
+            print(error)
+
+        try:
+            os.mkdir('{}/0/images'.format(self.PATH_ALL_IMAGES_BY_CLASS))
+        except OSError as error:
+            print(error)
+
+        try:
+            os.mkdir('{}/0/labels'.format(self.PATH_ALL_IMAGES_BY_CLASS))
+        except OSError as error:
+            print(error)
+
+        for file in file_list:
+            label_file_list = os.listdir('{}/{}/labels'.format(self.PATH_CROPPED, file))
+
+            for label_file in label_file_list:
+                print(label_file)
+
+
 
     # Assistant method to create copies of labels and images to folder all images cropped
     #
     def copy_images_cropped_to_folder_all_images(self):
         file_list = os.listdir('{}/'.format(self.PATH_CROPPED))
 
-        self.__create_folder_images_for_all_images()
-        self.__create_folder_labels_for_all_images()
+        self.__create_folder_for_all_images("images")
+        self.__create_folder_for_all_images("labels")
 
         for file in file_list:
             sub_file_list = os.listdir('{}/{}'.format(self.PATH_CROPPED, file))
@@ -30,10 +58,10 @@ class ClassificationLabelCropper:
             for sub_file in sub_file_list:
                 if sub_file == 'images':
                     images_list = os.listdir('{}/{}/images/'.format(self.PATH_CROPPED, file))
-                    self.__create_copies_of_images_from_images_cropped(images_list, file)
+                    self.__create_copies_from_images_cropped(images_list, file, "images")
                 else:
                     labels_list = os.listdir('{}/{}/labels/'.format(self.PATH_CROPPED, file))
-                    self.__create_copies_of_labels_from_images_cropped(labels_list, file)
+                    self.__create_copies_from_images_cropped(labels_list, file, "labels")
 
     # Assistant method to create all images cropped
     #
@@ -43,23 +71,14 @@ class ClassificationLabelCropper:
             file_name = file.replace(".jpg", "")
             self.__create_crops_from_image(file_name)
 
-    # Assistant method to create copies of labels to folder all images cropped
+    # Assistant method to create copies to folder all images cropped
     #
-    def __create_copies_of_labels_from_images_cropped(self, labels_list, file):
-        for i in range(len(labels_list)):
-            label = labels_list[i]
-            original_label_path = '{}/{}/labels/{}'.format(self.PATH_CROPPED, file, label)
-            copy_label_path = '{}/labels/{}'.format(self.PATH_ALL_IMAGES, label)
-            shutil.copy(original_label_path, copy_label_path)
-
-    # Assistant method to create copies of images to folder all images cropped
-    #
-    def __create_copies_of_images_from_images_cropped(self, images_list, file):
-        for i in range(len(images_list)):
-            image = images_list[i]
-            original_image_path = '{}/{}/images/{}'.format(self.PATH_CROPPED, file, image)
-            copy_image_path = '{}/images/{}'.format(self.PATH_ALL_IMAGES, image)
-            shutil.copy(original_image_path, copy_image_path)
+    def __create_copies_from_images_cropped(self, list_of_elements, file, folder_name):
+        for i in range(len(list_of_elements)):
+            element = list_of_elements[i]
+            original_element_path = '{}/{}/{}/{}'.format(self.PATH_CROPPED, file, folder_name, element)
+            copy_element_path = '{}/{}/{}'.format(self.PATH_ALL_IMAGES, folder_name, element)
+            shutil.copy(original_element_path, copy_element_path)
 
     # Assistant method to create cropped images from the original image
     #
@@ -87,19 +106,11 @@ class ClassificationLabelCropper:
         shutil.move(image_path, '{}/{}.jpg'.format(self.PATH_FINALLY, file_name))
         shutil.move(label_path, '{}/{}.txt'.format(self.PATH_FINALLY, file_name))
 
-    # Assistant method to create folder images to path all images
+    # Assistant method to create folder to path all images
     #
-    def __create_folder_images_for_all_images(self):
+    def __create_folder_for_all_images(self, folder_name):
         try:
-            os.mkdir('{}/images'.format(self.PATH_ALL_IMAGES))
-        except OSError as error:
-            print(error)
-
-    # Assistant method to create folder labels to path all images
-    #
-    def __create_folder_labels_for_all_images(self):
-        try:
-            os.mkdir('{}/labels'.format(self.PATH_ALL_IMAGES))
+            os.mkdir('{}/{}'.format(self.PATH_ALL_IMAGES, folder_name))
         except OSError as error:
             print(error)
 
