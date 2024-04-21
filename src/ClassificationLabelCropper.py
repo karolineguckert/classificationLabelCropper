@@ -16,6 +16,8 @@ class ClassificationLabelCropper:
         self.PATH_CROPPED = './images/cropped'
         self.PATH_ALL_IMAGES = './images/allImageCropped'
 
+    # Assistant method to create copies of labels and images to folder all images cropped
+    #
     def copy_images_cropped_to_folder_all_images(self):
         file_list = os.listdir('{}/'.format(self.PATH_CROPPED))
 
@@ -41,6 +43,8 @@ class ClassificationLabelCropper:
             file_name = file.replace(".jpg", "")
             self.__create_crops_from_image(file_name)
 
+    # Assistant method to create copies of labels to folder all images cropped
+    #
     def __create_copies_of_labels_from_images_cropped(self, labels_list, file):
         for i in range(len(labels_list)):
             label = labels_list[i]
@@ -48,6 +52,8 @@ class ClassificationLabelCropper:
             copy_label_path = '{}/labels/{}'.format(self.PATH_ALL_IMAGES, label)
             shutil.copy(original_label_path, copy_label_path)
 
+    # Assistant method to create copies of images to folder all images cropped
+    #
     def __create_copies_of_images_from_images_cropped(self, images_list, file):
         for i in range(len(images_list)):
             image = images_list[i]
@@ -112,13 +118,11 @@ class ClassificationLabelCropper:
     # file_name is the name of the file
     def __create_label_file(self, new_voc_bounding_box, class_type, file_name_formatted, file_name):
         new_file_path = '{}/{}/labels/{}.txt'.format(self.PATH_CROPPED, file_name, file_name_formatted)
-        # copy_label_path = '{}/labels/{}.txt'.format(self.PATH_ALL_IMAGES, file_name_formatted)
 
         file = open(new_file_path, 'a')
         file.write(self.__format_bounding_box(new_voc_bounding_box.to_yolo().values, class_type))
 
         file.close()
-        # shutil.copy(new_file_path, copy_label_path)
 
     # Assistant method to create yolo bounding box from text file
     #
