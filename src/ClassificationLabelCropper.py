@@ -7,6 +7,7 @@ import shutil
 class ClassificationLabelCropper:
 
     def __init__(self):
+        self.TYPE_QUANTITY = 5
         self.BORDER_DEFAULT = 30
         self.WIDTH = 4608
         self.HEIGHT = 3456
@@ -15,34 +16,17 @@ class ClassificationLabelCropper:
         self.PATH_FINALLY = './images/originalImageFinallyCropped'
         self.PATH_CROPPED = './images/cropped'
         self.PATH_ALL_IMAGES = './images/allImageCropped'
-        self.PATH_ALL_IMAGES_BY_CLASS = './images/allImagesCroppedByClass'
+        self.PATH_ALL_IMAGES_BY_TYPE = './images/allImagesCroppedByType'
 
-    def copy_images_cropped_to_folder_all_images_by_class(self):
+    def copy_images_cropped_to_folder_all_images_by_type(self):
         file_list = os.listdir('{}/'.format(self.PATH_CROPPED))
-
-
-        try:
-            os.mkdir('{}/0'.format(self.PATH_ALL_IMAGES_BY_CLASS))
-        except OSError as error:
-            print(error)
-
-        try:
-            os.mkdir('{}/0/images'.format(self.PATH_ALL_IMAGES_BY_CLASS))
-        except OSError as error:
-            print(error)
-
-        try:
-            os.mkdir('{}/0/labels'.format(self.PATH_ALL_IMAGES_BY_CLASS))
-        except OSError as error:
-            print(error)
+        self.__create_all_folders_for_all_images_by_type()
 
         for file in file_list:
             label_file_list = os.listdir('{}/{}/labels'.format(self.PATH_CROPPED, file))
 
             for label_file in label_file_list:
                 print(label_file)
-
-
 
     # Assistant method to create copies of labels and images to folder all images cropped
     #
@@ -105,6 +89,30 @@ class ClassificationLabelCropper:
 
         shutil.move(image_path, '{}/{}.jpg'.format(self.PATH_FINALLY, file_name))
         shutil.move(label_path, '{}/{}.txt'.format(self.PATH_FINALLY, file_name))
+
+    # Assistant method to create folder type to path all images by type
+    #
+    def __create_folder_to_a_type(self, folder_name):
+        try:
+            os.mkdir('{}/{}'.format(self.PATH_ALL_IMAGES_BY_TYPE, folder_name))
+        except OSError as error:
+            print(error)
+
+        try:
+            os.mkdir('{}/{}/images'.format(self.PATH_ALL_IMAGES_BY_TYPE, folder_name))
+        except OSError as error:
+            print(error)
+
+        try:
+            os.mkdir('{}/{}/labels'.format(self.PATH_ALL_IMAGES_BY_TYPE, folder_name))
+        except OSError as error:
+            print(error)
+
+    # Assistant method to create all folders of type to path all images by type
+    #
+    def __create_all_folders_for_all_images_by_type(self):
+        for i in range(self.TYPE_QUANTITY):
+            self.__create_folder_to_a_type(i)
 
     # Assistant method to create folder to path all images
     #
