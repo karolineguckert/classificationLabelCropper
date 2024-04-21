@@ -11,10 +11,19 @@ class ClassificationLabelCropper:
         self.WIDTH = 4608
         self.HEIGHT = 3456
         self.list_of_borders = []
+        self.PATH_TO_CROP = 'images/originalImageToCrop'
+        self.PATH_FINALLY = './images/originalImageFinallyCropped'
+        self.PATH_CROPPED = './images/cropped'
+
+    def create_crops_from_all_images(self):
+        file_list = os.listdir('{}/images'.format(self.PATH_TO_CROP))
+        for file in file_list:
+            file_name = file.replace(".jpg", "")
+            self.create_crops_from_image(file_name)
 
     def create_crops_from_image(self, file_name):
-        image_path = 'images/originalImageToCrop/{}.jpg'.format(file_name)
-        label_path = 'images/originalImageToCrop/{}.txt'.format(file_name)
+        image_path = '{}/images/{}.jpg'.format(self.PATH_TO_CROP, file_name)
+        label_path = '{}/labels/{}.txt'.format(self.PATH_TO_CROP, file_name)
         self.__create_folders(file_name)
 
         original_image = Image.open(image_path)
@@ -26,18 +35,18 @@ class ClassificationLabelCropper:
             class_type = content[0]
 
             new_image = self.__get_new_image_cropped(content, original_image)
-            new_image.save('./images/cropped/{}/images/{}-{}.jpg'.format(file_name,file_name, i))
+            new_image.save('{}/{}/images/{}-{}.jpg'.format(self.PATH_CROPPED, file_name,file_name, i))
 
             new_voc_bounding_box = BoundingBox.from_voc(*self.__get_new_image_bounding_box(new_image), new_image.size)
             self.__create_label_file(new_voc_bounding_box, class_type, '{}-{}'.format(file_name, i), file_name)
 
-        shutil.move(image_path, './images/originalImageFinallyCropped/{}.jpg'.format(file_name))
-        shutil.move(label_path, './images/originalImageFinallyCropped/{}.txt'.format(file_name))
+        shutil.move(image_path, '{}/{}.jpg'.format(self.PATH_FINALLY, file_name))
+        shutil.move(label_path, '{}/{}.txt'.format(self.PATH_FINALLY, file_name))
 
     def __create_folders(self, file_name):
-        os.mkdir('./images/cropped/{}'.format(file_name))
-        os.mkdir('./images/cropped/{}/images'.format(file_name))
-        os.mkdir('./images/cropped/{}/labels'.format(file_name))
+        os.mkdir('{}/{}'.format(self.PATH_CROPPED, file_name))
+        os.mkdir('{}/{}/images'.format(self.PATH_CROPPED, file_name))
+        os.mkdir('{}/{}/labels'.format(self.PATH_CROPPED, file_name))
 
     # Assistant method to create the bounding box in a txt file
     #
@@ -45,7 +54,7 @@ class ClassificationLabelCropper:
     # class_type is the type of the object that is in the image
     # file_name is the name of the file
     def __create_label_file(self, new_voc_bounding_box, class_type, file_name_formatted, file_name):
-        file = open('./images/cropped/{}/labels/{}.txt'.format(file_name, file_name_formatted), 'a')
+        file = open('{}/{}/labels/{}.txt'.format(self.PATH_CROPPED, file_name, file_name_formatted), 'a')
         file.write(self.__format_bounding_box(new_voc_bounding_box.to_yolo().values, class_type))
 
         file.close()
@@ -81,6 +90,7 @@ class ClassificationLabelCropper:
         original_voc_bounding_box = original_yolo_bounding_box.to_voc()
 
         new_voc_bounding_box = self.__get_new_voc_bounding_box(original_voc_bounding_box)
+        print(new_voc_bounding_box)
 
         return original_image.crop(new_voc_bounding_box)
 
