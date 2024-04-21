@@ -14,6 +14,7 @@ class ClassificationLabelCropper:
         self.PATH_TO_CROP = 'images/originalImageToCrop'
         self.PATH_FINALLY = './images/originalImageFinallyCropped'
         self.PATH_CROPPED = './images/cropped'
+        self.PATH_ALL_IMAGES = './images/allImageCropped'
 
     def create_crops_from_all_images(self):
         file_list = os.listdir('{}/images'.format(self.PATH_TO_CROP))
@@ -35,13 +36,18 @@ class ClassificationLabelCropper:
             class_type = content[0]
 
             new_image = self.__get_new_image_cropped(content, original_image)
-            new_image.save('{}/{}/images/{}-{}.jpg'.format(self.PATH_CROPPED, file_name,file_name, i))
+            new_image_path = '{}/{}/images/{}-{}.jpg'.format(self.PATH_CROPPED, file_name, file_name, i)
+            copy_image_path = '{}/images/{}-{}.jpg'.format(self.PATH_ALL_IMAGES, file_name, i)
+
+            new_image.save(new_image_path)
+            shutil.copy(new_image_path, copy_image_path)
 
             new_voc_bounding_box = BoundingBox.from_voc(*self.__get_new_image_bounding_box(new_image), new_image.size)
             self.__create_label_file(new_voc_bounding_box, class_type, '{}-{}'.format(file_name, i), file_name)
 
         shutil.move(image_path, '{}/{}.jpg'.format(self.PATH_FINALLY, file_name))
         shutil.move(label_path, '{}/{}.txt'.format(self.PATH_FINALLY, file_name))
+
 
     def __create_folders(self, file_name):
         os.mkdir('{}/{}'.format(self.PATH_CROPPED, file_name))
@@ -54,10 +60,14 @@ class ClassificationLabelCropper:
     # class_type is the type of the object that is in the image
     # file_name is the name of the file
     def __create_label_file(self, new_voc_bounding_box, class_type, file_name_formatted, file_name):
-        file = open('{}/{}/labels/{}.txt'.format(self.PATH_CROPPED, file_name, file_name_formatted), 'a')
+        new_file_path = '{}/{}/labels/{}.txt'.format(self.PATH_CROPPED, file_name, file_name_formatted)
+        copy_label_path = '{}/labels/{}.txt'.format(self.PATH_ALL_IMAGES, file_name_formatted)
+
+        file = open(new_file_path, 'a')
         file.write(self.__format_bounding_box(new_voc_bounding_box.to_yolo().values, class_type))
 
         file.close()
+        shutil.copy(new_file_path, copy_label_path)
 
     # Assistant method to create yolo bounding box from text file
     #
