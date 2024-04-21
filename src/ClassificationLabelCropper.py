@@ -16,13 +16,49 @@ class ClassificationLabelCropper:
         self.PATH_CROPPED = './images/cropped'
         self.PATH_ALL_IMAGES = './images/allImageCropped'
 
+    def copy_images_cropped_to_folder_all_images(self):
+        file_list = os.listdir('{}/'.format(self.PATH_CROPPED))
+
+        self.__create_folder_images_for_all_images()
+        self.__create_folder_labels_for_all_images()
+
+        for file in file_list:
+            sub_file_list = os.listdir('{}/{}'.format(self.PATH_CROPPED, file))
+
+            for sub_file in sub_file_list:
+                if sub_file == 'images':
+                    images_list = os.listdir('{}/{}/images/'.format(self.PATH_CROPPED, file))
+                    self.__create_copies_of_images_from_images_cropped(images_list, file)
+                else:
+                    labels_list = os.listdir('{}/{}/labels/'.format(self.PATH_CROPPED, file))
+                    self.__create_copies_of_labels_from_images_cropped(labels_list, file)
+
+    # Assistant method to create all images cropped
+    #
     def create_crops_from_all_images(self):
         file_list = os.listdir('{}/images'.format(self.PATH_TO_CROP))
         for file in file_list:
             file_name = file.replace(".jpg", "")
-            self.create_crops_from_image(file_name)
+            self.__create_crops_from_image(file_name)
 
-    def create_crops_from_image(self, file_name):
+    def __create_copies_of_labels_from_images_cropped(self, labels_list, file):
+        for i in range(len(labels_list)):
+            label = labels_list[i]
+            original_label_path = '{}/{}/labels/{}'.format(self.PATH_CROPPED, file, label)
+            copy_label_path = '{}/labels/{}'.format(self.PATH_ALL_IMAGES, label)
+            shutil.copy(original_label_path, copy_label_path)
+
+    def __create_copies_of_images_from_images_cropped(self, images_list, file):
+        for i in range(len(images_list)):
+            image = images_list[i]
+            original_image_path = '{}/{}/images/{}'.format(self.PATH_CROPPED, file, image)
+            copy_image_path = '{}/images/{}'.format(self.PATH_ALL_IMAGES, image)
+            shutil.copy(original_image_path, copy_image_path)
+
+    # Assistant method to create cropped images from the original image
+    #
+    # file_name is the name of the file
+    def __create_crops_from_image(self, file_name):
         image_path = '{}/images/{}.jpg'.format(self.PATH_TO_CROP, file_name)
         label_path = '{}/labels/{}.txt'.format(self.PATH_TO_CROP, file_name)
         self.__create_folders(file_name)
@@ -37,10 +73,7 @@ class ClassificationLabelCropper:
 
             new_image = self.__get_new_image_cropped(content, original_image)
             new_image_path = '{}/{}/images/{}-{}.jpg'.format(self.PATH_CROPPED, file_name, file_name, i)
-            copy_image_path = '{}/images/{}-{}.jpg'.format(self.PATH_ALL_IMAGES, file_name, i)
-
             new_image.save(new_image_path)
-            shutil.copy(new_image_path, copy_image_path)
 
             new_voc_bounding_box = BoundingBox.from_voc(*self.__get_new_image_bounding_box(new_image), new_image.size)
             self.__create_label_file(new_voc_bounding_box, class_type, '{}-{}'.format(file_name, i), file_name)
@@ -48,7 +81,25 @@ class ClassificationLabelCropper:
         shutil.move(image_path, '{}/{}.jpg'.format(self.PATH_FINALLY, file_name))
         shutil.move(label_path, '{}/{}.txt'.format(self.PATH_FINALLY, file_name))
 
+    # Assistant method to create folder images to path all images
+    #
+    def __create_folder_images_for_all_images(self):
+        try:
+            os.mkdir('{}/images'.format(self.PATH_ALL_IMAGES))
+        except OSError as error:
+            print(error)
 
+    # Assistant method to create folder labels to path all images
+    #
+    def __create_folder_labels_for_all_images(self):
+        try:
+            os.mkdir('{}/labels'.format(self.PATH_ALL_IMAGES))
+        except OSError as error:
+            print(error)
+
+    # Assistant method to create folders to path cropped
+    #
+    # file_name is the name of the file
     def __create_folders(self, file_name):
         os.mkdir('{}/{}'.format(self.PATH_CROPPED, file_name))
         os.mkdir('{}/{}/images'.format(self.PATH_CROPPED, file_name))
@@ -61,13 +112,13 @@ class ClassificationLabelCropper:
     # file_name is the name of the file
     def __create_label_file(self, new_voc_bounding_box, class_type, file_name_formatted, file_name):
         new_file_path = '{}/{}/labels/{}.txt'.format(self.PATH_CROPPED, file_name, file_name_formatted)
-        copy_label_path = '{}/labels/{}.txt'.format(self.PATH_ALL_IMAGES, file_name_formatted)
+        # copy_label_path = '{}/labels/{}.txt'.format(self.PATH_ALL_IMAGES, file_name_formatted)
 
         file = open(new_file_path, 'a')
         file.write(self.__format_bounding_box(new_voc_bounding_box.to_yolo().values, class_type))
 
         file.close()
-        shutil.copy(new_file_path, copy_label_path)
+        # shutil.copy(new_file_path, copy_label_path)
 
     # Assistant method to create yolo bounding box from text file
     #
@@ -139,7 +190,7 @@ class ClassificationLabelCropper:
     #
     # x_tl is the value from x of the top left
     def __get_value_x_tl(self, x_tl):
-        if(x_tl - self.BORDER_DEFAULT) < 0:
+        if (x_tl - self.BORDER_DEFAULT) < 0:
             aux_x_tl = self.BORDER_DEFAULT - x_tl
 
             if self.BORDER_DEFAULT == aux_x_tl or x_tl == 0:
@@ -151,7 +202,6 @@ class ClassificationLabelCropper:
         else:
             new_value_x_tl = x_tl - self.BORDER_DEFAULT
             self.list_of_borders.append(self.BORDER_DEFAULT)
-
 
         return new_value_x_tl
 
