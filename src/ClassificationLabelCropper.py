@@ -100,7 +100,7 @@ class ClassificationLabelCropper:
     def __get_new_image_bounding_box(self, new_image):
         new_image_width = new_image.size[0]
         new_image_height = new_image.size[1]
-        print(self.list_of_borders)
+        # print(self.list_of_borders)
         return [
             self.list_of_borders[0],
             self.list_of_borders[1],
@@ -112,6 +112,7 @@ class ClassificationLabelCropper:
     #
     # bounding_boxes is the bounding box from the image cropped
     def __get_new_voc_bounding_box(self, bounding_boxes):
+        print(bounding_boxes.values)
         new_value_x_tl = self.__get_value_x_tl(bounding_boxes.x_tl)
         new_value_y_tl = self.__get_value_y_tl(bounding_boxes.y_tl)
         new_value_x_br = self.__get_value_x_br(bounding_boxes.x_br)
@@ -129,9 +130,9 @@ class ClassificationLabelCropper:
     # x_tl is the value from x of the top left
     def __get_value_x_tl(self, x_tl):
         if(x_tl - self.BORDER_DEFAULT) < 0:
-            aux_x_tl = self.WIDTH - x_tl
+            aux_x_tl = self.BORDER_DEFAULT - x_tl
 
-            if aux_x_tl == self.WIDTH or x_tl == 0:
+            if self.BORDER_DEFAULT == aux_x_tl or x_tl == 0:
                 new_value_x_tl = 0
                 self.list_of_borders.append(0)
             else:
@@ -149,9 +150,9 @@ class ClassificationLabelCropper:
     # y_tl is the value from y of the top left
     def __get_value_y_tl(self, y_tl):
         if (y_tl - self.BORDER_DEFAULT) < 0:
-            aux_y_tl = self.HEIGHT - y_tl
+            aux_y_tl = self.BORDER_DEFAULT - y_tl
 
-            if aux_y_tl == self.HEIGHT or y_tl == 0:
+            if self.BORDER_DEFAULT == aux_y_tl or y_tl == 0:
                 new_value_y_tl = 0
                 self.list_of_borders.append(0)
             else:
@@ -169,13 +170,16 @@ class ClassificationLabelCropper:
     def __get_value_x_br(self, x_br):
         if (x_br + self.BORDER_DEFAULT) > self.WIDTH:
             aux_x_br = self.WIDTH - x_br
-
-            if aux_x_br == 0:
-                new_value_x_br = 0
-                self.list_of_borders.append(0)
+            if x_br != self.WIDTH:
+                if aux_x_br == 0:
+                    new_value_x_br = 0
+                    self.list_of_borders.append(0)
+                else:
+                    new_value_x_br = aux_x_br + x_br
+                    self.list_of_borders.append(aux_x_br)
             else:
-                new_value_x_br = aux_x_br + x_br
-                self.list_of_borders.append(aux_x_br)
+                new_value_x_br = x_br
+                self.list_of_borders.append(0)
         else:
             new_value_x_br = x_br + self.BORDER_DEFAULT
             self.list_of_borders.append(self.BORDER_DEFAULT)
@@ -186,15 +190,19 @@ class ClassificationLabelCropper:
     #
     # y_br is the value from y of the bottom right
     def __get_value_y_br(self, y_br):
-        if (y_br + 30) > self.HEIGHT:
+        if (y_br + self.BORDER_DEFAULT) > self.HEIGHT:
             aux_y_br = self.HEIGHT - y_br
 
-            if aux_y_br == 0:
-                new_value_y_br = 0
-                self.list_of_borders.append(0)
+            if y_br != self.HEIGHT:
+                if aux_y_br == 0:
+                    new_value_y_br = 0
+                    self.list_of_borders.append(0)
+                else:
+                    new_value_y_br = aux_y_br + y_br
+                    self.list_of_borders.append(aux_y_br)
             else:
-                new_value_y_br = aux_y_br + y_br
-                self.list_of_borders.append(aux_y_br)
+                new_value_y_br = y_br
+                self.list_of_borders.append(0)
         else:
             new_value_y_br = y_br + self.BORDER_DEFAULT
             self.list_of_borders.append(self.BORDER_DEFAULT)
