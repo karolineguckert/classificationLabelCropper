@@ -155,7 +155,6 @@ class ClassificationLabelCropper:
         original_voc_bounding_box = original_yolo_bounding_box.to_voc()
 
         new_voc_bounding_box = self.__get_new_voc_bounding_box(original_voc_bounding_box)
-        print(new_voc_bounding_box)
 
         return original_image.crop(new_voc_bounding_box)
 
@@ -165,7 +164,6 @@ class ClassificationLabelCropper:
     def __get_new_image_bounding_box(self, new_image):
         new_image_width = new_image.size[0]
         new_image_height = new_image.size[1]
-        # print(self.list_of_borders)
         return [
             self.list_of_borders[0],
             self.list_of_borders[1],
@@ -177,7 +175,6 @@ class ClassificationLabelCropper:
     #
     # bounding_boxes is the bounding box from the image cropped
     def __get_new_voc_bounding_box(self, bounding_boxes):
-        print(bounding_boxes.values)
         new_value_x_tl = self.__get_value_x_tl(bounding_boxes.x_tl)
         new_value_y_tl = self.__get_value_y_tl(bounding_boxes.y_tl)
         new_value_x_br = self.__get_value_x_br(bounding_boxes.x_br)
