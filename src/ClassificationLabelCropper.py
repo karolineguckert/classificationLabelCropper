@@ -41,7 +41,6 @@ class ClassificationLabelCropper:
                 shutil.copy(original_label_path, copy_label_path)
                 shutil.copy(original_image_path, copy_image_path)
 
-
     # Assistant method to create copies of labels and images to folder all images cropped
     #
     def copy_images_cropped_to_folder_all_images(self):
@@ -197,11 +196,44 @@ class ClassificationLabelCropper:
     def __get_new_image_bounding_box(self, new_image):
         new_image_width = new_image.size[0]
         new_image_height = new_image.size[1]
+        print()
+        print(new_image_width, new_image_height)
+
+        border_of_x_br = new_image_width - self.list_of_borders[2]
+        border_of_y_br = new_image_height - self.list_of_borders[3]
+
+
+
+        new_value_x_tl = self.list_of_borders[0]
+        new_value_y_tl = self.list_of_borders[1]
+
+
+        print(self.list_of_borders)
+        if new_image_width < (new_value_x_tl + self.list_of_borders[2]):
+            print("ui 1")
+            new_value_x_br = new_image_width
+        else:
+            new_value_x_br = border_of_x_br
+        # print("ui 2", border_of_y_br + self.list_of_borders[1])
+        #
+        if new_image_height < (new_value_y_tl + self.list_of_borders[3]):
+            new_value_y_br = new_image_height
+        else:
+            new_value_y_br = border_of_y_br
+
+        # if (new_image_width <  new_image_width - self.list_of_borders[2]) = 0 else  new_image_width - self.list_of_borders[2]
+
+        print("aaa", [
+            new_value_x_tl,
+            new_value_y_tl,
+            new_value_x_br,
+            new_value_y_br
+        ])
         return [
-            self.list_of_borders[0],
-            self.list_of_borders[1],
-            new_image_width - self.list_of_borders[2],
-            new_image_height - self.list_of_borders[3]
+            new_value_x_tl,
+            new_value_y_tl,
+            new_value_x_br,
+            new_value_y_br
         ]
 
     # Assistant method to create a new bounding box from the image cropped
