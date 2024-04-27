@@ -12,11 +12,11 @@ class ClassificationLabelCropper:
         self.WIDTH = 4608
         self.HEIGHT = 3456
         self.list_of_borders = []
-        self.PATH_TO_CROP = 'images/originalImageToCrop'
-        self.PATH_FINALLY = './images/originalImageFinallyCropped'
-        self.PATH_CROPPED = './images/cropped'
-        self.PATH_ALL_IMAGES = './images/allImageCropped'
-        self.PATH_ALL_IMAGES_BY_TYPE = './images/allImagesCroppedByType'
+        self.PATH_TO_CROP = '../images/originalImageToCrop'
+        self.PATH_FINALLY = '../images/originalImageFinallyCropped'
+        self.PATH_CROPPED = '../images/cropped'
+        self.PATH_ALL_IMAGES = '../images/allImageCropped'
+        self.PATH_ALL_IMAGES_BY_TYPE = '../images/allImagesCroppedByType'
 
     def copy_images_cropped_to_folder_all_images_by_type(self):
         file_list = os.listdir('{}/'.format(self.PATH_CROPPED))
@@ -71,7 +71,26 @@ class ClassificationLabelCropper:
 
     def get_images_sizes(self):
         file_list = os.listdir('{}/images'.format(self.PATH_ALL_IMAGES))
-        print(file_list)
+
+        name_of_image_higher_size = ""
+        higher_size = (0, 0)
+
+        name_of_image_lower_size = ""
+        lower_size = (2253, 2114)
+        for file_name in file_list:
+            image_path = '{}/images/{}'.format(self.PATH_ALL_IMAGES, file_name)
+
+            original_image = Image.open(image_path)
+            if original_image.size > higher_size:
+                higher_size = original_image.size
+                name_of_image_higher_size = file_name
+
+            if original_image.size < lower_size:
+                lower_size = original_image.size
+                name_of_image_lower_size = file_name
+
+        print(name_of_image_higher_size, higher_size)
+        print(name_of_image_lower_size, lower_size)
 
 
 
