@@ -6,17 +6,19 @@ import shutil
 
 class ClassificationLabelCropper:
 
-    def __init__(self):
+    def __init__(self, root_folder):
         self.TYPE_QUANTITY = 6
         self.BORDER_DEFAULT = 30
         self.WIDTH = 4608
         self.HEIGHT = 3456
         self.list_of_borders = []
-        self.PATH_TO_CROP = '../images/originalImageToCrop'
-        self.PATH_FINALLY = '../images/originalImageFinallyCropped'
-        self.PATH_CROPPED = '../images/cropped'
-        self.PATH_ALL_IMAGES = '../images/allImageCropped'
-        self.PATH_ALL_IMAGES_BY_TYPE = '../images/allImagesCroppedByType'
+
+        self.PATH_TO_CROP = '../src/{}/originalImageToCrop'.format(root_folder)
+        self.PATH_FINALLY = '../src/{}/originalImageFinallyCropped'.format(root_folder)
+        self.PATH_CROPPED = '../src/{}/cropped'.format(root_folder)
+        self.PATH_ALL_IMAGES = '../src/{}/allImageCropped'.format(root_folder)
+        self.PATH_ALL_IMAGES_BY_TYPE = '../src/{}/allImagesCroppedByType'.format(root_folder)
+        self.__create_initial_folders(root_folder)
 
     def copy_images_cropped_to_folder_all_images_by_type(self):
         file_list = os.listdir('{}/'.format(self.PATH_CROPPED))
@@ -92,8 +94,6 @@ class ClassificationLabelCropper:
         print(name_of_image_higher_size, higher_size)
         print(name_of_image_lower_size, lower_size)
 
-
-
     # Assistant method to create copies to folder all images cropped
     #
     def __create_copies_from_images_cropped(self, list_of_elements, file, folder_name):
@@ -160,6 +160,21 @@ class ClassificationLabelCropper:
             os.mkdir('{}/{}'.format(self.PATH_ALL_IMAGES, folder_name))
         except OSError as error:
             print(error)
+
+    # Assistant method to create initial folders to path
+    #
+    # file_name is the name of the file
+    def __create_initial_folders(self, root_folder):
+        try:
+            os.mkdir('{}'.format(root_folder))
+            os.mkdir('{}'.format(self.PATH_TO_CROP).replace("..", ""))
+            os.mkdir('{}'.format(self.PATH_FINALLY).replace("..", ""))
+            os.mkdir('{}'.format(self.PATH_CROPPED).replace("..", ""))
+            os.mkdir('{}'.format(self.PATH_ALL_IMAGES).replace("..", ""))
+            os.mkdir('{}'.format(self.PATH_ALL_IMAGES_BY_TYPE).replace("..", ""))
+        except OSError as error:
+            print(error)
+
 
     # Assistant method to create folders to path cropped
     #
