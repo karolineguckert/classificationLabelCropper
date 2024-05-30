@@ -3,7 +3,7 @@ import os
 
 class ImageCropper:
 
-    def teste(self):
+    def create_crop_from_all_images(self):
         images_to_crop_path = "../images_to_crop/images"
         images_list = os.listdir(images_to_crop_path)
 

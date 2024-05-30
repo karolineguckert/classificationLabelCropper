@@ -2,3 +2,5 @@
 .idea/
 images
 images_to_yolo
+images_to_crop
+src/images_without_class
